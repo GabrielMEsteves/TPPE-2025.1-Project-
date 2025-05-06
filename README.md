@@ -18,6 +18,8 @@ O projeto tem como objetivo criar uma plataforma para **compra de passagens** de
 
 O projeto foi estruturado com base nas seguintes histórias de usuário:
 
+- [Histórias de Usuário](https://miro.com/app/board/uXjVI5uL_BE=/?share_link_id=508717449507)
+
 
 ---
 
@@ -25,8 +27,7 @@ O projeto foi estruturado com base nas seguintes histórias de usuário:
 
 Foram definidos os seguintes diagramas UML para o projeto:
 
--  
-- 
+-  [Diagrama UML](https://miro.com/app/board/uXjVI5pps0w=/?share_link_id=251978010194)
 
 ---
 
