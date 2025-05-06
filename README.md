@@ -1,2 +1,44 @@
-# TPPE-2025.1-Project-
-Repositório destinado para o trabalho de TPPE do semestre 2025.1.
+# TPPE-2025.1-Project
+
+Repositório destinado ao trabalho de **TPPE** do semestre **2025.1**, desenvolvido para gerenciar a compra de passagens de avião e ônibus, com informações sobre itinerários e trajetos de viagem.
+
+---
+
+## 🛠️ Sobre o Projeto
+
+O projeto tem como objetivo criar uma plataforma para **compra de passagens** de **avião e ônibus**, com funcionalidades que incluem:
+
+- **Busca e compra de passagens** com opções de viagem para diferentes destinos.
+- **Exibição de itinerários** com horários e trajetos de viagem.
+- **Histórico de compras** e gestão de reservas.
+
+---
+
+## 📖 Histórias de Usuário
+
+O projeto foi estruturado com base nas seguintes histórias de usuário:
+
+
+---
+
+## 📊 Diagramas UML
+
+Foram definidos os seguintes diagramas UML para o projeto:
+
+-  
+- 
+
+---
+
+
+## 🧑‍💻 Tecnologias Utilizadas
+
+- **Backend**: FastAPI, Python
+- **Banco de Dados**: PostgreSQL
+- **Frontend**: -
+- **Infraestrutura**: Docker, Docker Compose
+- **Testes**: Pytest
+- **Documentação**: Swagger UI (FastAPI)
+
+---
+
