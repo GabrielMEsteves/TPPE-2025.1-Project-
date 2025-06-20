@@ -12,6 +12,8 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+
+
   backend:
     build: ./app
     ports:
@@ -19,7 +21,7 @@ services:
     depends_on:
       - db
     environment:
-      DATABASE_URL: postgres://user:password@db:5432/mydb
+      DATABASE_URL: postgresql://user:password@db:5432/mydb
 
   test:
     build: ./app

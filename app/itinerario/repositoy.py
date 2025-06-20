@@ -1,0 +1,42 @@
+from sqlalchemy.orm import Session
+from model.model import Itinerario
+from .schema import ItinerarioCreate, ItinerarioUpdate
+from typing import List, Optional
+
+def create_itinerario(db: Session, itin: ItinerarioCreate) -> Itinerario:
+    db_itin = Itinerario(**itin.dict())
+    db.add(db_itin)
+    db.commit()
+    db.refresh(db_itin)
+    return db_itin
+
+def list_itinerarios(db: Session) -> List[Itinerario]:
+    return db.query(Itinerario).all()
+
+def get_itinerarios_by_filter(db: Session, origem: Optional[str] = None, destino: Optional[str] = None, data: Optional[str] = None) -> List[Itinerario]:
+    query = db.query(Itinerario)
+    if origem:
+        query = query.filter(Itinerario.origem == origem)
+    if destino:
+        query = query.filter(Itinerario.destino == destino)
+    if data:
+        query = query.filter(Itinerario.data == data)
+    return query.all()
+
+def update_itinerario(db: Session, itin_id: int, itin: ItinerarioUpdate) -> Optional[Itinerario]:
+    db_itin = db.query(Itinerario).filter(Itinerario.id == itin_id).first()
+    if not db_itin:
+        return None
+    for field, value in itin.dict(exclude_unset=True).items():
+        setattr(db_itin, field, value)
+    db.commit()
+    db.refresh(db_itin)
+    return db_itin
+
+def delete_itinerario(db: Session, itin_id: int) -> bool:
+    db_itin = db.query(Itinerario).filter(Itinerario.id == itin_id).first()
+    if not db_itin:
+        return False
+    db.delete(db_itin)
+    db.commit()
+    return True
