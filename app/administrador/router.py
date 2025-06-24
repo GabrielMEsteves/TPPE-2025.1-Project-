@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from administrador import repository, schema
 from itinerario import schema as itin_schema, repositoy as itin_repository
+from passagem import repository as passagem_repository, schema as passagem_schema
 from database import get_db
 from jose import jwt, JWTError
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -62,3 +63,18 @@ def create_itinerario_admin(
     current_admin: schema.AdminOut = Depends(get_current_admin)
 ):
     return itin_repository.create_itinerario(db, itin)
+
+@router.get("/itinerarios", response_model=List[itin_schema.ItinerarioOut])
+def listar_itinerarios_admin(
+    db: Session = Depends(get_db),
+    current_admin: schema.AdminOut = Depends(get_current_admin)
+):
+    return itin_repository.list_itinerarios(db)
+
+@router.get("/itinerarios/{itinerario_id}/passageiros", response_model=List[passagem_schema.PassagemOut])
+def listar_passageiros_itinerario(
+    itinerario_id: int,
+    db: Session = Depends(get_db),
+    current_admin: schema.AdminOut = Depends(get_current_admin)
+):
+    return passagem_repository.get_passagens_by_filter(db, itinerario_id=itinerario_id)
