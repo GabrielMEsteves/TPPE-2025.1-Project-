@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from app.administrador import repository, schema
-from app.itinerario import schema as itin_schema, repositoy as itin_repository
-from app.database import get_db
+from administrador import repository, schema
+from itinerario import schema as itin_schema, repositoy as itin_repository
+from database import get_db
 from jose import jwt, JWTError
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from datetime import datetime, timedelta

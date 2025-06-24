@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.model.model import Admin
+from model.model import Admin
 from .schema import AdminCreate
 from passlib.context import CryptContext
 
