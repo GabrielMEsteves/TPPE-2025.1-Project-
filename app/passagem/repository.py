@@ -23,6 +23,17 @@ def get_passagens_by_filter(db: Session, itinerario_id: Optional[int] = None, ti
         query = query.filter(Passagem.nome_passageiro.ilike(f"%{nome_passageiro}%"))
     return query.all()
 
+def get_passagens_by_passageiro(db: Session, nome_passageiro: Optional[str] = None, telefone: Optional[str] = None) -> List[Passagem]:
+    query = db.query(Passagem)
+    if nome_passageiro:
+        query = query.filter(Passagem.nome_passageiro.ilike(f"%{nome_passageiro}%"))
+    if telefone:
+        query = query.filter(Passagem.telefone == telefone)
+    return query.all()
+
+def get_passagem_by_id(db: Session, passagem_id: int) -> Optional[Passagem]:
+    return db.query(Passagem).filter(Passagem.id == passagem_id).first()
+
 def update_passagem(db: Session, passagem_id: int, passagem: PassagemUpdate) -> Optional[Passagem]:
     db_passagem = db.query(Passagem).filter(Passagem.id == passagem_id).first()
     if not db_passagem:
