@@ -1,7 +1,9 @@
-from sqlalchemy import Column, Integer, String, Date, ForeignKey, Enum
-from sqlalchemy.orm import relationship
-from database import Base
 import enum
+
+from database import Base
+from sqlalchemy import Column, Date, Enum, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
+
 
 class User(Base):
     __tablename__ = "users"
@@ -10,12 +12,14 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
 
+
 class Admin(Base):
     __tablename__ = "admins"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
+
 
 class Itinerario(Base):
     __tablename__ = "itinerarios"
@@ -25,20 +29,24 @@ class Itinerario(Base):
     data = Column(Date, nullable=False)
     passagens = relationship("Passagem", back_populates="itinerario")
 
+
 class TipoPassagemEnum(str, enum.Enum):
     aviao = "aviao"
     onibus = "onibus"
+
 
 class ClassePassagemAviaoEnum(str, enum.Enum):
     economica = "ECONOMICA"
     executiva = "EXECUTIVA"
     primeira_classe = "PRIMEIRA_CLASSE"
 
+
 class TipoPoltronaOnibusEnum(str, enum.Enum):
     cama_leito = "CAMA_LEITO"
     semi_leito = "SEMI_LEITO"
     executiva = "EXECUTIVA"
     convencional = "CONVENCIONAL"
+
 
 class Passagem(Base):
     __tablename__ = "passagens"

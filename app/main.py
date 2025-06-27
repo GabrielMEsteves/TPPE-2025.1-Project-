@@ -1,10 +1,10 @@
-from fastapi import FastAPI
-from usuario import router as usuario_router
-from itinerario import router as itinerario_router
-from passagem import router as passagem_router
 from administrador import router as admin_router
 from database import Base, engine
-from model.model import User, Admin, Itinerario, Passagem
+from fastapi import FastAPI
+from itinerario import router as itinerario_router
+from model.model import Admin, Itinerario, Passagem, User
+from passagem import router as passagem_router
+from usuario import router as usuario_router
 
 Base.metadata.create_all(bind=engine)
 
