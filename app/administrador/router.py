@@ -88,7 +88,9 @@ def create_itinerario_admin(
     db: Session = Depends(get_db),
     current_admin: schema.AdminOut = Depends(get_current_admin),
 ):
-    return itin_repository.create_itinerario(db, itin)
+    itin_data = itin.dict()
+    itin_data["admin_id"] = current_admin.id
+    return itin_repository.create_itinerario(db, itin_schema.ItinerarioCreate(**itin_data))
 
 
 @router.get("/itinerarios", response_model=List[itin_schema.ItinerarioOut])
@@ -111,3 +113,8 @@ def listar_passageiros_itinerario(
     return passagem_repository.get_passagens_by_filter(
         db, itinerario_id=itinerario_id
     )
+
+
+@router.get("/me", response_model=schema.AdminOut)
+def get_me(current_admin: schema.AdminOut = Depends(get_current_admin)):
+    return current_admin

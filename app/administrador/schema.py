@@ -16,6 +16,7 @@ class AdminCreate(AdminBase):
 
 class AdminOut(AdminBase):
     id: int
+    role: str = "admin"
 
     class Config:
         from_attributes = True

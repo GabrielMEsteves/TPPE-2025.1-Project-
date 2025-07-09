@@ -5,14 +5,20 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from . import repository, schema
+from usuario.router import get_current_user
 
 router = APIRouter(prefix="/passagens", tags=["passagens"])
 
 
 @router.post("/", response_model=schema.PassagemOut, status_code=201)
-def create_passagem(passagem: schema.PassagemCreate, db: Session = Depends(get_db)):
-    passagem_criada = repository.create_passagem(db, passagem)
-    # Retorna todos os dados da passagem criada como confirmação
+def create_passagem(
+    passagem: schema.PassagemCreate,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    passagem_data = passagem.dict()
+    passagem_data["user_id"] = current_user.id
+    passagem_criada = repository.create_passagem(db, schema.PassagemCreate(**passagem_data))
     return passagem_criada
 
 
@@ -26,9 +32,10 @@ def buscar_passagens(
     itinerario_id: Optional[int] = Query(None),
     tipo: Optional[str] = Query(None),
     nome_passageiro: Optional[str] = Query(None),
+    user_id: Optional[int] = Query(None),
     db: Session = Depends(get_db),
 ):
-    return repository.get_passagens_by_filter(db, itinerario_id, tipo, nome_passageiro)
+    return repository.get_passagens_by_filter(db, itinerario_id, tipo, nome_passageiro, user_id)
 
 
 @router.get("/minhas", response_model=List[schema.PassagemOut])

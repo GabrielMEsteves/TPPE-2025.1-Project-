@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from model.model import Itinerario, Passagem
+from model.model import Itinerario, Passagem, User
 from sqlalchemy.orm import Session
 
 from .schema import PassagemCreate, PassagemUpdate
@@ -11,6 +11,10 @@ def create_passagem(db: Session, passagem: PassagemCreate) -> Passagem:
     itin = db.query(Itinerario).filter(Itinerario.id == passagem.itinerario_id).first()
     if not itin:
         raise ValueError("Itinerário informado não existe")
+    # Validação: user_id deve existir
+    user = db.query(User).filter(User.id == passagem.user_id).first()
+    if not user:
+        raise ValueError("Usuário informado não existe")
     db_passagem = Passagem(**passagem.dict())
     db.add(db_passagem)
     db.commit()
@@ -27,6 +31,7 @@ def get_passagens_by_filter(
     itinerario_id: Optional[int] = None,
     tipo: Optional[str] = None,
     nome_passageiro: Optional[str] = None,
+    user_id: Optional[int] = None,
 ) -> List[Passagem]:
     query = db.query(Passagem)
     if itinerario_id:
@@ -35,6 +40,8 @@ def get_passagens_by_filter(
         query = query.filter(Passagem.tipo == tipo)
     if nome_passageiro:
         query = query.filter(Passagem.nome_passageiro.ilike(f"%{nome_passageiro}%"))
+    if user_id:
+        query = query.filter(Passagem.user_id == user_id)
     return query.all()
 
 

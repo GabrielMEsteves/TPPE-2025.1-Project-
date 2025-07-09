@@ -23,6 +23,7 @@ def get_itinerarios_by_filter(
     origem: Optional[str] = None,
     destino: Optional[str] = None,
     data: Optional[str] = None,
+    admin_id: Optional[int] = None,
 ) -> List[Itinerario]:
     query = db.query(Itinerario)
     if origem:
@@ -31,6 +32,8 @@ def get_itinerarios_by_filter(
         query = query.filter(Itinerario.destino == destino)
     if data:
         query = query.filter(Itinerario.data == data)
+    if admin_id:
+        query = query.filter(Itinerario.admin_id == admin_id)
     return query.all()
 
 

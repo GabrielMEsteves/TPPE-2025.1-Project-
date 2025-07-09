@@ -97,12 +97,18 @@ def itinerario_id():
 
 
 def test_create_passagem(passagem_data, itinerario_id):
+    # Cria usuário para associar à passagem
+    user_data = {"name": "Teste User", "email": "testeuser@email.com", "password": "123456"}
+    user_resp = client.post("/api/v1/usuarios/", json=user_data)
+    user_id = user_resp.json()["id"]
     passagem_data["itinerario_id"] = itinerario_id
+    passagem_data["user_id"] = user_id
     resp = client.post("/api/v1/passagens/", json=passagem_data)
     assert resp.status_code == 201
     data = resp.json()
     assert data["nome_passageiro"] == "João"
     assert data["itinerario_id"] == itinerario_id
+    assert data["user_id"] == user_id
 
 
 def test_list_passagens():

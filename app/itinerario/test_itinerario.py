@@ -81,11 +81,17 @@ def itinerario_data():
 
 
 def test_create_itinerario(itinerario_data):
+    # Cria admin para associar ao itinerario
+    admin_data = {"name": "Admin Teste", "email": "adminteste@email.com", "password": "123456"}
+    admin_resp = client.post("/api/v1/admin/signup", json=admin_data)
+    admin_id = admin_resp.json()["id"]
+    itinerario_data["admin_id"] = admin_id
     resp = client.post("/api/v1/itinerarios/", json=itinerario_data)
     assert resp.status_code == 201
     data = resp.json()
     assert data["origem"] == "Recife"
     assert data["destino"] == "SP"
+    assert data["admin_id"] == admin_id
 
 
 def test_list_itinerarios():
