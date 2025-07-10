@@ -13,6 +13,7 @@ import AdminPassengers from './pages/AdminPassengers';
 import CadastroUsuario from './pages/CadastroUsuario';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import UserDashboard from './pages/UserDashboard';
 
 const App: React.FC = () => {
   return (
@@ -26,6 +27,7 @@ const App: React.FC = () => {
           <Route path="/compra-passagem" element={<ProtectedRoute><CompraPassagem /></ProtectedRoute>} />
           <Route path="/confirmacao-compra" element={<ProtectedRoute><ConfirmacaoCompra /></ProtectedRoute>} />
           <Route path="/minhas-passagens" element={<ProtectedRoute><MinhasPassagens /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
           <Route path="/admin/dashboard" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/create" element={<ProtectedRoute adminOnly><AdminCreate /></ProtectedRoute>} />
           <Route path="/admin/passengers" element={<ProtectedRoute adminOnly><AdminPassengers /></ProtectedRoute>} />

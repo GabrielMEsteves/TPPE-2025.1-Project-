@@ -14,7 +14,7 @@ const LoginUser: React.FC = () => {
     setError('');
     try {
       await login(email, password);
-      navigate('/busca-itinerario');
+      navigate('/dashboard');
     } catch (err) {
       setError('Credenciais inválidas.');
     }

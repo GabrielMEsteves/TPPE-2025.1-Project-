@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from model.model import Itinerario, Passagem, User
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from .schema import PassagemCreate, PassagemUpdate
 
@@ -47,13 +47,61 @@ def get_passagens_by_filter(
 
 def get_passagens_by_passageiro(
     db: Session, nome_passageiro: Optional[str] = None, telefone: Optional[str] = None
-) -> List[Passagem]:
-    query = db.query(Passagem)
+) -> list:
+    query = db.query(Passagem).options(joinedload(Passagem.itinerario))
     if nome_passageiro:
         query = query.filter(Passagem.nome_passageiro.ilike(f"%{nome_passageiro}%"))
     if telefone:
         query = query.filter(Passagem.telefone == telefone)
-    return query.all()
+    passagens = query.all()
+    # Adiciona destino e data do itinerário relacionado
+    result = []
+    for p in passagens:
+        item = p.__dict__.copy()
+        if hasattr(p, 'itinerario') and p.itinerario:
+            item['origem'] = p.itinerario.origem
+            item['destino'] = p.itinerario.destino
+            item['data'] = str(p.itinerario.data)
+            item['empresa'] = getattr(p.itinerario, 'empresa', '-')
+            item['horario'] = getattr(p.itinerario, 'horario', '-')
+        else:
+            item['origem'] = None
+            item['destino'] = None
+            item['data'] = None
+            item['empresa'] = None
+            item['horario'] = None
+        item['status'] = 'CONFIRMADA'
+        result.append(item)
+    return result
+
+
+def get_passagens_by_user(
+    db: Session, user_id: int, nome_passageiro: Optional[str] = None, telefone: Optional[str] = None
+) -> list:
+    query = db.query(Passagem).options(joinedload(Passagem.itinerario)).filter(Passagem.user_id == user_id)
+    if nome_passageiro:
+        query = query.filter(Passagem.nome_passageiro.ilike(f"%{nome_passageiro}%"))
+    if telefone:
+        query = query.filter(Passagem.telefone == telefone)
+    passagens = query.all()
+    result = []
+    for p in passagens:
+        item = p.__dict__.copy()
+        if hasattr(p, 'itinerario') and p.itinerario:
+            item['origem'] = p.itinerario.origem
+            item['destino'] = p.itinerario.destino
+            item['data'] = str(p.itinerario.data)
+            item['empresa'] = getattr(p.itinerario, 'empresa', '-')
+            item['horario'] = getattr(p.itinerario, 'horario', '-')
+        else:
+            item['origem'] = None
+            item['destino'] = None
+            item['data'] = None
+            item['empresa'] = None
+            item['horario'] = None
+        item['status'] = 'CONFIRMADA'
+        result.append(item)
+    return result
 
 
 def get_passagem_by_id(db: Session, passagem_id: int) -> Optional[Passagem]:

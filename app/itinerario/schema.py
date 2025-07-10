@@ -9,6 +9,8 @@ class ItinerarioBase(BaseModel):
     destino: Optional[str] = None
     data: Optional[date] = None
     admin_id: Optional[int] = None
+    empresa: Optional[str] = None
+    horario: Optional[str] = None
 
 
 class ItinerarioCreate(ItinerarioBase):
@@ -16,6 +18,8 @@ class ItinerarioCreate(ItinerarioBase):
     destino: str
     data: date
     admin_id: int
+    empresa: str
+    horario: str
 
 
 class ItinerarioUpdate(ItinerarioBase):
@@ -25,6 +29,8 @@ class ItinerarioUpdate(ItinerarioBase):
 class ItinerarioOut(ItinerarioBase):
     id: int
     admin_id: int
+    empresa: str
+    horario: str
 
     class Config:
         from_attributes = True

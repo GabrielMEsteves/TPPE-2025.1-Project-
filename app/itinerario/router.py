@@ -3,6 +3,7 @@ from typing import List, Optional
 from database import get_db
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
+from datetime import datetime
 
 from . import repositoy, schema
 
@@ -29,8 +30,14 @@ def buscar_itinerarios(
     data: Optional[str] = Query(None),
     db: Session = Depends(get_db),
 ):
+    data_date = None
+    if data:
+        try:
+            data_date = datetime.strptime(data, "%Y-%m-%d").date()
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Data inválida")
     return repositoy.get_itinerarios_by_filter(
-        db, origem, destino, data
+        db, origem, destino, data_date
     )
 
 

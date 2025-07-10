@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 const AdminCreate: React.FC = () => {
   const navigate = useNavigate();
@@ -12,6 +13,8 @@ const AdminCreate: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +28,7 @@ const AdminCreate: React.FC = () => {
         data,
         horario,
         empresa,
+        admin_id: user?.id,
       });
       setSuccess('Itinerário cadastrado com sucesso!');
       setTimeout(() => navigate('/admin/dashboard'), 1200);

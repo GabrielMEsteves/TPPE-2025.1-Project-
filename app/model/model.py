@@ -29,6 +29,8 @@ class Itinerario(Base):
     origem = Column(String, nullable=False)
     destino = Column(String, nullable=False)
     data = Column(Date, nullable=False)
+    empresa = Column(String, nullable=False)
+    horario = Column(String, nullable=False)
     admin_id = Column(Integer, ForeignKey("admins.id"), nullable=False)
     admin = relationship("Admin", back_populates="itinerarios")
     passagens = relationship("Passagem", back_populates="itinerario")

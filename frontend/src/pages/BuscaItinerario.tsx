@@ -25,7 +25,7 @@ const BuscaItinerario: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await api.get('/itinerarios/buscar', {
+      const response = await api.get('/api/v1/itinerarios/buscar', {
         params: { origem, destino, data },
       });
       setItinerarios(response.data);

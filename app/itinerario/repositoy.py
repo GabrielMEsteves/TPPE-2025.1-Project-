@@ -22,7 +22,7 @@ def get_itinerarios_by_filter(
     db: Session,
     origem: Optional[str] = None,
     destino: Optional[str] = None,
-    data: Optional[str] = None,
+    data: Optional[object] = None,  # pode ser date ou None
     admin_id: Optional[int] = None,
 ) -> List[Itinerario]:
     query = db.query(Itinerario)

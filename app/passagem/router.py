@@ -43,8 +43,9 @@ def consultar_minhas_passagens(
     nome_passageiro: Optional[str] = Query(None),
     telefone: Optional[str] = Query(None),
     db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
 ):
-    return repository.get_passagens_by_passageiro(db, nome_passageiro, telefone)
+    return repository.get_passagens_by_user(db, current_user.id, nome_passageiro, telefone)
 
 
 @router.get("/{passagem_id}", response_model=schema.PassagemOut)

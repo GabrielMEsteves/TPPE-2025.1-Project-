@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 interface Itinerario {
   id: number;
@@ -17,6 +18,10 @@ const CompraPassagem: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const { user } = useAuth();
+  const [nome, setNome] = useState('');
+  const [telefone, setTelefone] = useState('');
+  const [tipo, setTipo] = useState('onibus');
 
   useEffect(() => {
     const stored = localStorage.getItem('itinerarioSelecionado');
@@ -26,17 +31,19 @@ const CompraPassagem: React.FC = () => {
   }, []);
 
   const handleComprar = async () => {
-    if (!itinerario) return;
+    if (!itinerario || !user) return;
     setLoading(true);
     setError('');
     setSuccess('');
     try {
-      // Exemplo de payload, ajuste conforme schema.PassagemCreate
       const payload = {
+        nome_passageiro: nome,
+        telefone,
+        tipo,
         itinerario_id: itinerario.id,
-        // Adicione outros campos obrigatórios conforme necessário
+        user_id: user.id,
       };
-      await api.post('/passagens/', payload);
+      await api.post('/api/v1/passagens/', payload);
       setSuccess('Passagem comprada com sucesso!');
       localStorage.removeItem('itinerarioSelecionado');
       setTimeout(() => navigate('/minhas-passagens'), 1500);
@@ -70,6 +77,15 @@ const CompraPassagem: React.FC = () => {
           <button className="bg-slate-700 text-slate-300 hover:bg-slate-600 px-4 py-2 rounded-full text-sm font-semibold">Menor Preço</button>
         </div>
         <div className="space-y-4 w-full">
+          {/* Inputs para nome, telefone e tipo */}
+          <div className="flex flex-col md:flex-row gap-4 mb-4">
+            <input type="text" placeholder="Nome do passageiro" value={nome} onChange={e => setNome(e.target.value)} className="bg-slate-700 border border-slate-600 text-white rounded-lg p-3 w-full" />
+            <input type="text" placeholder="Telefone" value={telefone} onChange={e => setTelefone(e.target.value)} className="bg-slate-700 border border-slate-600 text-white rounded-lg p-3 w-full" />
+            <select value={tipo} onChange={e => setTipo(e.target.value)} className="bg-slate-700 border border-slate-600 text-white rounded-lg p-3 w-full">
+              <option value="onibus">Ônibus</option>
+              <option value="aviao">Avião</option>
+            </select>
+          </div>
           <div className="bg-slate-700/50 p-4 rounded-lg flex flex-col md:flex-row justify-between items-center gap-4 transition hover:bg-slate-700">
             <div className="flex items-center gap-4">
               <i className="ph-bold ph-bus text-3xl text-cyan-400"></i>
