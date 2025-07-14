@@ -1,7 +1,7 @@
 import enum
 
 from database import Base
-from sqlalchemy import Column, Date, Enum, ForeignKey, Integer, String
+from sqlalchemy import Column, Date, Enum, ForeignKey, Integer, String, Float
 from sqlalchemy.orm import relationship
 
 
@@ -23,6 +23,20 @@ class Admin(Base):
     itinerarios = relationship("Itinerario", back_populates="admin")
 
 
+class TipoTransporteEnum(str, enum.Enum):
+    aviao = "aviao"
+    onibus = "onibus"
+
+
+class TipoAssentoEnum(str, enum.Enum):
+    economica = "economica"
+    executiva = "executiva"
+    primeira_classe = "primeira_classe"
+    cama_leito = "cama_leito"
+    semi_leito = "semi_leito"
+    convencional = "convencional"
+
+
 class Itinerario(Base):
     __tablename__ = "itinerarios"
     id = Column(Integer, primary_key=True, index=True)
@@ -31,6 +45,10 @@ class Itinerario(Base):
     data = Column(Date, nullable=False)
     empresa = Column(String, nullable=False)
     horario = Column(String, nullable=False)
+    duracao_viagem = Column(String, nullable=True)  # Ex: "2h 30min"
+    preco_viagem = Column(Float, nullable=True)  # Preço em reais
+    tipo_transporte = Column(Enum(TipoTransporteEnum), nullable=True)
+    tipo_assento = Column(Enum(TipoAssentoEnum), nullable=True)
     admin_id = Column(Integer, ForeignKey("admins.id"), nullable=False)
     admin = relationship("Admin", back_populates="itinerarios")
     passagens = relationship("Passagem", back_populates="itinerario")

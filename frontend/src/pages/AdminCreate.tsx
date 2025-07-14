@@ -3,6 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
+const tipoAssentoAviao = [
+  { value: 'economica', label: 'Econômica' },
+  { value: 'executiva', label: 'Executiva' },
+  { value: 'primeira_classe', label: 'Primeira Classe' },
+];
+const tipoAssentoOnibus = [
+  { value: 'cama_leito', label: 'Cama Leito' },
+  { value: 'semi_leito', label: 'Semi Leito' },
+  { value: 'executiva', label: 'Executiva' },
+  { value: 'convencional', label: 'Convencional' },
+];
+
 const AdminCreate: React.FC = () => {
   const navigate = useNavigate();
   const [origem, setOrigem] = useState('');
@@ -10,6 +22,10 @@ const AdminCreate: React.FC = () => {
   const [data, setData] = useState('');
   const [horario, setHorario] = useState('');
   const [empresa, setEmpresa] = useState('');
+  const [duracaoViagem, setDuracaoViagem] = useState('');
+  const [precoViagem, setPrecoViagem] = useState('');
+  const [tipoTransporte, setTipoTransporte] = useState<'aviao' | 'onibus'>('aviao');
+  const [tipoAssento, setTipoAssento] = useState('economica');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -28,6 +44,10 @@ const AdminCreate: React.FC = () => {
         data,
         horario,
         empresa,
+        duracao_viagem: duracaoViagem,
+        preco_viagem: parseFloat(precoViagem),
+        tipo_transporte: tipoTransporte,
+        tipo_assento: tipoAssento,
         admin_id: user?.id,
       });
       setSuccess('Itinerário cadastrado com sucesso!');
@@ -38,6 +58,8 @@ const AdminCreate: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const assentosOptions = tipoTransporte === 'aviao' ? tipoAssentoAviao : tipoAssentoOnibus;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-900">
@@ -63,6 +85,29 @@ const AdminCreate: React.FC = () => {
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-1">Empresa</label>
             <input type="text" value={empresa} onChange={e => setEmpresa(e.target.value)} className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg p-3" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-1">Duração da Viagem</label>
+            <input type="text" value={duracaoViagem} onChange={e => setDuracaoViagem(e.target.value)} placeholder="Ex: 2h 30min" className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg p-3" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-1">Preço da Viagem (R$)</label>
+            <input type="number" min="0" step="0.01" value={precoViagem} onChange={e => setPrecoViagem(e.target.value)} className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg p-3" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-1">Tipo de Transporte</label>
+            <select value={tipoTransporte} onChange={e => { setTipoTransporte(e.target.value as 'aviao' | 'onibus'); setTipoAssento(tipoTransporte === 'aviao' ? 'economica' : 'cama_leito'); }} className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg p-3">
+              <option value="aviao">Avião</option>
+              <option value="onibus">Ônibus</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-1">Tipo de Assento</label>
+            <select value={tipoAssento} onChange={e => setTipoAssento(e.target.value)} className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg p-3">
+              {assentosOptions.map(opt => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
           </div>
         </div>
         <div className="flex justify-end mt-6 space-x-4">

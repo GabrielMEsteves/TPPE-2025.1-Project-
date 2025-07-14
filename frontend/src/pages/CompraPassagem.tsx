@@ -10,6 +10,10 @@ interface Itinerario {
   data: string;
   empresa: string;
   horario: string;
+  duracao_viagem?: string;
+  preco_viagem?: number;
+  tipo_transporte?: 'aviao' | 'onibus';
+  tipo_assento?: string;
 }
 
 const CompraPassagem: React.FC = () => {
@@ -54,6 +58,24 @@ const CompraPassagem: React.FC = () => {
     }
   };
 
+  const formatarPreco = (preco?: number) => {
+    if (!preco) return 'N/A';
+    return `R$ ${preco.toFixed(2)}`;
+  };
+
+  const formatarTipoAssento = (assento?: string) => {
+    if (!assento) return 'N/A';
+    const assentos: { [key: string]: string } = {
+      'economica': 'Econômica',
+      'executiva': 'Executiva',
+      'primeira_classe': 'Primeira Classe',
+      'cama_leito': 'Cama Leito',
+      'semi_leito': 'Semi Leito',
+      'convencional': 'Convencional'
+    };
+    return assentos[assento] || assento;
+  };
+
   if (!itinerario) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white">
@@ -88,18 +110,18 @@ const CompraPassagem: React.FC = () => {
           </div>
           <div className="bg-slate-700/50 p-4 rounded-lg flex flex-col md:flex-row justify-between items-center gap-4 transition hover:bg-slate-700">
             <div className="flex items-center gap-4">
-              <i className="ph-bold ph-bus text-3xl text-cyan-400"></i>
+              <i className={`ph-bold ${itinerario.tipo_transporte === 'aviao' ? 'ph-airplane' : 'ph-bus'} text-3xl text-cyan-400`}></i>
               <div>
                 <p className="font-bold text-white">{itinerario.empresa}</p>
-                <span className="text-sm bg-green-900 text-green-300 px-2 py-1 rounded-md">Executivo</span>
+                <span className="text-sm bg-green-900 text-green-300 px-2 py-1 rounded-md">{formatarTipoAssento(itinerario.tipo_assento)}</span>
               </div>
             </div>
             <div className="text-center">
               <p className="font-mono text-lg text-white">{itinerario.horario}</p>
-              <p className="text-sm text-slate-400">Duração: 6h</p>
+              <p className="text-sm text-slate-400">Duração: {itinerario.duracao_viagem || 'N/A'}</p>
             </div>
             <div className="text-center md:text-right">
-              <p className="text-xl font-bold text-cyan-400">R$ 99,90</p>
+              <p className="text-xl font-bold text-cyan-400">{formatarPreco(itinerario.preco_viagem)}</p>
               <button onClick={handleComprar} disabled={loading} className="bg-cyan-600 text-white text-sm font-bold py-2 px-4 rounded-lg mt-2 hover:bg-cyan-500">{loading ? 'Comprando...' : 'COMPRAR'}</button>
             </div>
           </div>

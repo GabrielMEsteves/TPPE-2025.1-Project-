@@ -14,6 +14,10 @@ interface Passagem {
   status: string;
   telefone?: string;
   tipo?: string;
+  duracao_viagem?: string;
+  preco_viagem?: number;
+  tipo_transporte?: string;
+  tipo_assento?: string;
 }
 
 const MinhasPassagens: React.FC = () => {
@@ -53,6 +57,29 @@ const MinhasPassagens: React.FC = () => {
     }
   };
 
+  const formatarPreco = (preco?: number) => {
+    if (!preco) return 'N/A';
+    return `R$ ${preco.toFixed(2)}`;
+  };
+
+  const formatarTipoAssento = (assento?: string) => {
+    if (!assento) return 'N/A';
+    const assentos: { [key: string]: string } = {
+      'economica': 'Econômica',
+      'executiva': 'Executiva',
+      'primeira_classe': 'Primeira Classe',
+      'cama_leito': 'Cama Leito',
+      'semi_leito': 'Semi Leito',
+      'convencional': 'Convencional'
+    };
+    return assentos[assento] || assento;
+  };
+
+  const formatarTipoTransporte = (tipo?: string) => {
+    if (!tipo) return 'N/A';
+    return tipo === 'aviao' ? 'Avião' : 'Ônibus';
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-900">
       <div className="w-full max-w-3xl mx-auto p-6 md:p-8 bg-slate-800 rounded-xl shadow-2xl flex-col fade-in">
@@ -72,7 +99,7 @@ const MinhasPassagens: React.FC = () => {
             <div key={p.id} className="bg-slate-700/50 p-4 rounded-lg border border-slate-500 flex flex-col md:flex-row md:items-center md:justify-between mb-2">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <i className="ph ph-bus text-xl text-cyan-400"></i>
+                  <i className={`ph ${p.tipo_transporte === 'aviao' ? 'ph-airplane' : 'ph-bus'} text-xl text-cyan-400`}></i>
                   <span className="font-bold text-lg text-white">{p.origem || '-'}</span>
                   <i className="ph ph-arrow-right text-lg text-cyan-400 mx-2"></i>
                   <span className="font-bold text-lg text-white">{p.destino || '-'}</span>
@@ -81,10 +108,12 @@ const MinhasPassagens: React.FC = () => {
                   <span><i className="ph ph-calendar"></i> {p.data || '-'}</span>
                   <span><i className="ph ph-clock"></i> {p.horario || '-'}</span>
                   <span><i className="ph ph-buildings"></i> {p.empresa || '-'}</span>
+                  <span><i className="ph ph-ticket"></i> {formatarTipoAssento(p.tipo_assento)}</span>
+                  <span><i className="ph ph-timer"></i> {p.duracao_viagem || '-'}</span>
+                  <span><i className="ph ph-currency-circle-dollar"></i> {formatarPreco(p.preco_viagem)}</span>
                 </div>
                 <div className="flex items-center gap-4 mt-2">
                   <span className={`text-xs font-bold px-2 py-1 rounded-full ${p.status === 'CONFIRMADA' ? 'bg-green-900/50 text-green-400' : 'bg-yellow-900/50 text-yellow-400'}`}>{p.status}</span>
-                  {/* Valor pode ser adicionado aqui se disponível: <span className="text-lg font-bold text-green-400">R$ 99,90</span> */}
                 </div>
               </div>
               <div className="flex flex-col md:flex-row gap-2 mt-4 md:mt-0 md:ml-4">
@@ -115,7 +144,10 @@ const MinhasPassagens: React.FC = () => {
               <div><b>Data:</b> {selectedPassagem.data || '-'}</div>
               <div><b>Horário:</b> {selectedPassagem.horario}</div>
               <div><b>Empresa:</b> {selectedPassagem.empresa}</div>
-              <div><b>Tipo:</b> {selectedPassagem.tipo || '-'}</div>
+              <div><b>Tipo de Transporte:</b> {formatarTipoTransporte(selectedPassagem.tipo_transporte)}</div>
+              <div><b>Tipo de Assento:</b> {formatarTipoAssento(selectedPassagem.tipo_assento)}</div>
+              <div><b>Duração:</b> {selectedPassagem.duracao_viagem || '-'}</div>
+              <div><b>Preço:</b> {formatarPreco(selectedPassagem.preco_viagem)}</div>
               <div><b>Status:</b> {selectedPassagem.status}</div>
             </div>
           </div>

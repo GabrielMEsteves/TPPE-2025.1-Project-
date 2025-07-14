@@ -18,6 +18,11 @@ def list_itinerarios(db: Session) -> List[Itinerario]:
     return db.query(Itinerario).all()
 
 
+def get_itinerario_by_id(db: Session, itinerario_id: int) -> Optional[Itinerario]:
+    """Obtém um itinerário específico por ID"""
+    return db.query(Itinerario).filter(Itinerario.id == itinerario_id).first()
+
+
 def get_itinerarios_by_filter(
     db: Session,
     origem: Optional[str] = None,

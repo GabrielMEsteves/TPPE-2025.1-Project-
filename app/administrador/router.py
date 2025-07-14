@@ -101,6 +101,46 @@ def listar_itinerarios_admin(
     return itin_repository.list_itinerarios(db)
 
 
+@router.get("/itinerarios/{itinerario_id}", response_model=itin_schema.ItinerarioOut)
+def obter_itinerario_admin(
+    itinerario_id: int,
+    db: Session = Depends(get_db),
+    current_admin: schema.AdminOut = Depends(get_current_admin),
+):
+    """Obtém um itinerário específico por ID"""
+    itinerario = itin_repository.get_itinerario_by_id(db, itinerario_id)
+    if not itinerario:
+        raise HTTPException(status_code=404, detail="Itinerário não encontrado")
+    return itinerario
+
+
+@router.put("/itinerarios/{itinerario_id}", response_model=itin_schema.ItinerarioOut)
+def editar_itinerario_admin(
+    itinerario_id: int,
+    itinerario_update: itin_schema.ItinerarioUpdate,
+    db: Session = Depends(get_db),
+    current_admin: schema.AdminOut = Depends(get_current_admin),
+):
+    """Edita um itinerário específico"""
+    db_itinerario = itin_repository.update_itinerario(db, itinerario_id, itinerario_update)
+    if not db_itinerario:
+        raise HTTPException(status_code=404, detail="Itinerário não encontrado")
+    return db_itinerario
+
+
+@router.delete("/itinerarios/{itinerario_id}", status_code=204)
+def excluir_itinerario_admin(
+    itinerario_id: int,
+    db: Session = Depends(get_db),
+    current_admin: schema.AdminOut = Depends(get_current_admin),
+):
+    """Exclui um itinerário específico"""
+    ok = itin_repository.delete_itinerario(db, itinerario_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Itinerário não encontrado")
+    return None
+
+
 @router.get(
     "/itinerarios/{itinerario_id}/passageiros",
     response_model=List[passagem_schema.PassagemOut],
@@ -113,6 +153,56 @@ def listar_passageiros_itinerario(
     return passagem_repository.get_passagens_by_filter(
         db, itinerario_id=itinerario_id
     )
+
+
+# Novos endpoints para gerenciamento de passagens
+@router.get("/passagens", response_model=List[passagem_schema.PassagemOut])
+def listar_todas_passagens(
+    db: Session = Depends(get_db),
+    current_admin: schema.AdminOut = Depends(get_current_admin),
+):
+    """Lista todas as passagens para administradores"""
+    return passagem_repository.list_passagens(db)
+
+
+@router.get("/passagens/{passagem_id}", response_model=passagem_schema.PassagemOut)
+def obter_passagem_admin(
+    passagem_id: int,
+    db: Session = Depends(get_db),
+    current_admin: schema.AdminOut = Depends(get_current_admin),
+):
+    """Obtém uma passagem específica por ID"""
+    passagem = passagem_repository.get_passagem_by_id(db, passagem_id)
+    if not passagem:
+        raise HTTPException(status_code=404, detail="Passagem não encontrada")
+    return passagem
+
+
+@router.put("/passagens/{passagem_id}", response_model=passagem_schema.PassagemOut)
+def editar_passagem_admin(
+    passagem_id: int,
+    passagem_update: passagem_schema.PassagemUpdate,
+    db: Session = Depends(get_db),
+    current_admin: schema.AdminOut = Depends(get_current_admin),
+):
+    """Edita uma passagem específica"""
+    db_passagem = passagem_repository.update_passagem(db, passagem_id, passagem_update)
+    if not db_passagem:
+        raise HTTPException(status_code=404, detail="Passagem não encontrada")
+    return db_passagem
+
+
+@router.delete("/passagens/{passagem_id}", status_code=204)
+def excluir_passagem_admin(
+    passagem_id: int,
+    db: Session = Depends(get_db),
+    current_admin: schema.AdminOut = Depends(get_current_admin),
+):
+    """Exclui uma passagem específica"""
+    ok = passagem_repository.delete_passagem(db, passagem_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Passagem não encontrada")
+    return None
 
 
 @router.get("/me", response_model=schema.AdminOut)

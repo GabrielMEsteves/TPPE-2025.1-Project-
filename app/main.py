@@ -6,6 +6,8 @@ from model.model import Admin, Itinerario, Passagem, User
 from passagem import router as passagem_router
 from usuario import router as usuario_router
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+load_dotenv()
 
 Base.metadata.create_all(bind=engine)
 

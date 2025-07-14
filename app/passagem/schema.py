@@ -64,6 +64,16 @@ class PassagemUpdate(PassagemBase):
 class PassagemOut(PassagemBase):
     id: int
     user_id: int
+    origem: Optional[str] = None
+    destino: Optional[str] = None
+    data: Optional[str] = None
+    horario: Optional[str] = None
+    empresa: Optional[str] = None
+    duracao_viagem: Optional[str] = None
+    preco_viagem: Optional[float] = None
+    tipo_transporte: Optional[str] = None
+    tipo_assento: Optional[str] = None
+    status: Optional[str] = None
 
     class Config:
         from_attributes = True
