@@ -12,6 +12,7 @@ from passagem.repository import (
     update_passagem,
 )
 from passagem.schema import PassagemCreate, PassagemUpdate, TipoPassagemEnum
+import uuid
 
 client = TestClient(app)
 
@@ -90,20 +91,48 @@ def passagem_data():
 
 @pytest.fixture
 def itinerario_id():
-    # Cria um itinerário para vincular a passagem
-    itin_data = {"origem": "Recife", "destino": "SP", "data": "2024-07-20"}
+    # Cria um admin único para cada teste
+    unique_email = f"adminteste_{uuid.uuid4()}@email.com"
+    admin_data = {"name": "Admin Teste", "email": unique_email, "password": "123456"}
+    admin_resp = client.post("/api/v1/admin/signup", json=admin_data)
+    if admin_resp.status_code == 201:
+        admin_id = admin_resp.json()["id"]
+    else:
+        # Se já existe, busca o id
+        get_resp = client.get(f"/api/v1/admins?email={unique_email}")
+        admin_id = get_resp.json()["id"] if get_resp.status_code == 200 else 1
+    itin_data = {
+        "origem": "Recife",
+        "destino": "SP",
+        "data": "2024-07-20",
+        "empresa": "Empresa Teste",
+        "horario": "08:00",
+        "duracao_viagem": "3h",
+        "preco_viagem": 199.99,
+        "tipo_transporte": "aviao",
+        "tipo_assento": "economica",
+        "admin_id": admin_id
+    }
     resp = client.post("/api/v1/itinerarios/", json=itin_data)
+    if resp.status_code != 201:
+        print("Erro ao criar itinerario:", resp.status_code, resp.text)
+        return None
     return resp.json()["id"]
 
 
 def test_create_passagem(passagem_data, itinerario_id):
     # Cria usuário para associar à passagem
-    user_data = {"name": "Teste User", "email": "testeuser@email.com", "password": "123456"}
+    user_data = {"name": "Teste User", "email": f"testeuser_{uuid.uuid4()}@email.com", "password": "123456"}
     user_resp = client.post("/api/v1/usuarios/", json=user_data)
     user_id = user_resp.json()["id"]
+    # Autentica usuário
+    login_data = {"username": user_data["email"], "password": user_data["password"]}
+    login_resp = client.post("/api/v1/usuarios/login", data=login_data)
+    token = login_resp.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
     passagem_data["itinerario_id"] = itinerario_id
     passagem_data["user_id"] = user_id
-    resp = client.post("/api/v1/passagens/", json=passagem_data)
+    resp = client.post("/api/v1/passagens/", json=passagem_data, headers=headers)
     assert resp.status_code == 201
     data = resp.json()
     assert data["nome_passageiro"] == "João"
@@ -129,18 +158,36 @@ def test_buscar_passagens(itinerario_id):
 
 
 def test_update_passagem(passagem_data, itinerario_id):
+    # Cria usuário e autentica
+    user_data = {"name": "Teste User", "email": f"testeuser_{uuid.uuid4()}@email.com", "password": "123456"}
+    user_resp = client.post("/api/v1/usuarios/", json=user_data)
+    user_id = user_resp.json()["id"]
+    login_data = {"username": user_data["email"], "password": user_data["password"]}
+    login_resp = client.post("/api/v1/usuarios/login", data=login_data)
+    token = login_resp.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
     passagem_data["itinerario_id"] = itinerario_id
-    resp = client.post("/api/v1/passagens/", json=passagem_data)
+    passagem_data["user_id"] = user_id
+    resp = client.post("/api/v1/passagens/", json=passagem_data, headers=headers)
     passagem_id = resp.json()["id"]
     update = {"nome_passageiro": "Maria"}
-    resp2 = client.put(f"/api/v1/passagens/{passagem_id}", json=update)
+    resp2 = client.put(f"/api/v1/passagens/{passagem_id}", json=update, headers=headers)
     assert resp2.status_code == 200
     assert resp2.json()["nome_passageiro"] == "Maria"
 
 
 def test_delete_passagem(passagem_data, itinerario_id):
+    # Cria usuário e autentica
+    user_data = {"name": "Teste User", "email": f"testeuser_{uuid.uuid4()}@email.com", "password": "123456"}
+    user_resp = client.post("/api/v1/usuarios/", json=user_data)
+    user_id = user_resp.json()["id"]
+    login_data = {"username": user_data["email"], "password": user_data["password"]}
+    login_resp = client.post("/api/v1/usuarios/login", data=login_data)
+    token = login_resp.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
     passagem_data["itinerario_id"] = itinerario_id
-    resp = client.post("/api/v1/passagens/", json=passagem_data)
+    passagem_data["user_id"] = user_id
+    resp = client.post("/api/v1/passagens/", json=passagem_data, headers=headers)
     passagem_id = resp.json()["id"]
-    resp2 = client.delete(f"/api/v1/passagens/{passagem_id}")
+    resp2 = client.delete(f"/api/v1/passagens/{passagem_id}", headers=headers)
     assert resp2.status_code == 204

@@ -1,12 +1,11 @@
-FROM python:3.11-slim
+FROM python:3.11
 
 WORKDIR /app
 
-COPY . .
+# Instala o cliente do PostgreSQL para pg_isready
+RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
+
+COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
-
-ENV PYTHONPATH=/app
-
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

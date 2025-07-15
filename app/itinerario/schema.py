@@ -45,6 +45,18 @@ class ItinerarioCreate(ItinerarioBase):
     tipo_assento: TipoAssentoEnum
 
 
+class ItinerarioCreateNoAdminId(BaseModel):
+    origem: str
+    destino: str
+    data: date
+    empresa: str
+    horario: str
+    duracao_viagem: str
+    preco_viagem: float
+    tipo_transporte: TipoTransporteEnum
+    tipo_assento: TipoAssentoEnum
+
+
 class ItinerarioUpdate(ItinerarioBase):
     pass
 

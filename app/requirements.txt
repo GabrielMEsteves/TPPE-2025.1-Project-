@@ -9,4 +9,8 @@ python-multipart
 black
 isort
 flake8
+pytest-cov
 python-dotenv
+httpx
+requests
+pylint
