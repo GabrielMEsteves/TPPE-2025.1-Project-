@@ -80,6 +80,8 @@ class Passagem(Base):
     tipo = Column(Enum(TipoPassagemEnum), nullable=False)
     classe_aviao = Column(Enum(ClassePassagemAviaoEnum), nullable=True)
     tipo_poltrona_onibus = Column(Enum(TipoPoltronaOnibusEnum), nullable=True)
+    numero_assento = Column(String, nullable=True)  # Novo campo
+    tipo_assento = Column(String, nullable=True)    # Novo campo
     itinerario_id = Column(Integer, ForeignKey("itinerarios.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     itinerario = relationship("Itinerario", back_populates="passagens")

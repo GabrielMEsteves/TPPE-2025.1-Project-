@@ -14,6 +14,7 @@ import CadastroUsuario from './pages/CadastroUsuario';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import UserDashboard from './pages/UserDashboard';
+import SelecionarAssento from './pages/SelecionarAssento';
 
 const App: React.FC = () => {
   return (
@@ -32,6 +33,7 @@ const App: React.FC = () => {
           <Route path="/admin/create" element={<ProtectedRoute adminOnly><AdminCreate /></ProtectedRoute>} />
           <Route path="/admin/passengers" element={<ProtectedRoute adminOnly><AdminPassengers /></ProtectedRoute>} />
           <Route path="/cadastro" element={<CadastroUsuario />} />
+          <Route path="/selecionar-assento" element={<ProtectedRoute><SelecionarAssento /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>

@@ -58,6 +58,12 @@ const CompraPassagem: React.FC = () => {
     }
   };
 
+  const handleAvancar = () => {
+    if (!itinerario || !user) return;
+    localStorage.setItem('dadosPassageiro', JSON.stringify({ nome, telefone, tipo, itinerario_id: itinerario.id, user_id: user.id }));
+    navigate('/selecionar-assento');
+  };
+
   const formatarPreco = (preco?: number) => {
     if (!preco) return 'N/A';
     return `R$ ${preco.toFixed(2)}`;
@@ -122,7 +128,7 @@ const CompraPassagem: React.FC = () => {
             </div>
             <div className="text-center md:text-right">
               <p className="text-xl font-bold text-cyan-400">{formatarPreco(itinerario.preco_viagem)}</p>
-              <button onClick={handleComprar} disabled={loading} className="bg-cyan-600 text-white text-sm font-bold py-2 px-4 rounded-lg mt-2 hover:bg-cyan-500">{loading ? 'Comprando...' : 'COMPRAR'}</button>
+              <button onClick={handleAvancar} disabled={loading} className="bg-cyan-600 text-white text-sm font-bold py-2 px-4 rounded-lg mt-2 hover:bg-cyan-500">{loading ? 'Avançando...' : 'AVANÇAR'}</button>
             </div>
           </div>
         </div>

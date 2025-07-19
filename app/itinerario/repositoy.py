@@ -62,3 +62,29 @@ def delete_itinerario(db: Session, itin_id: int) -> bool:
     db.delete(db_itin)
     db.commit()
     return True
+
+
+def get_mapa_assentos(db: Session, itinerario_id: int):
+    itin = get_itinerario_by_id(db, itinerario_id)
+    if not itin:
+        return {"error": "Itinerário não encontrado"}
+    # Definir layout de assentos por tipo de transporte
+    if itin.tipo_transporte == "onibus":
+        linhas, colunas = 10, 4  # 40 assentos
+    else:
+        linhas, colunas = 20, 6  # 120 assentos (avião)
+    # Buscar assentos ocupados
+    from model.model import Passagem
+    ocupados = db.query(Passagem.numero_assento).filter(Passagem.itinerario_id == itinerario_id).all()
+    ocupados_set = set([o[0] for o in ocupados if o[0]])
+    mapa = []
+    for l in range(1, linhas+1):
+        row = []
+        for c in range(1, colunas+1):
+            assento = f"{l}{chr(64+c)}"  # Ex: 1A, 1B, ...
+            row.append({
+                "numero": assento,
+                "ocupado": assento in ocupados_set
+            })
+        mapa.append(row)
+    return {"mapa": mapa, "linhas": linhas, "colunas": colunas, "tipo_transporte": itin.tipo_transporte}

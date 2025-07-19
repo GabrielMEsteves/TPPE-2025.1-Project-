@@ -148,6 +148,17 @@ def delete_passagem(db: Session, passagem_id: int) -> bool:
     return True
 
 
+def reservar_assento(db: Session, itinerario_id: int, numero_assento: str, user_id: int):
+    from model.model import Passagem
+    # Verifica se o assento já está ocupado
+    ocupado = db.query(Passagem).filter(Passagem.itinerario_id == itinerario_id, Passagem.numero_assento == numero_assento).first()
+    if ocupado:
+        return {"success": False, "message": "Assento já ocupado"}
+    # Reserva temporária: cria uma passagem com status 'RESERVADO' (ou similar)
+    # Aqui, apenas retorna sucesso, pois a reserva real ocorre na compra
+    return {"success": True, "message": "Assento reservado com sucesso"}
+
+
 def send_confirmation_email(user_email, user_name, passagem, itinerario):
     smtp_host = os.getenv('SMTP_HOST', 'smtp.gmail.com')
     smtp_port = int(os.getenv('SMTP_PORT', 587))

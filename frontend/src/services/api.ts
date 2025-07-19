@@ -13,4 +13,16 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+export const getMapaAssentos = async (itinerarioId: number) => {
+  const res = await api.get(`/api/v1/itinerarios/${itinerarioId}/assentos`);
+  return res.data;
+};
+
+export const reservarAssento = async (itinerarioId: number, numeroAssento: string) => {
+  const res = await api.post(`/api/v1/passagens/reservar-assento`, null, {
+    params: { itinerario_id: itinerarioId, numero_assento: numeroAssento }
+  });
+  return res.data;
+};
+
 export default api; 

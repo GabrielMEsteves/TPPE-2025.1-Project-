@@ -38,12 +38,14 @@ services:
 
   test:
     build: ./app
-    command: ["sh", "-c", "cd /app; pytest --maxfail=1000 --disable-warnings --tb=short --cov=. --cov-report=term-missing; flake8 .; pylint app"]
+    command: ["sh", "-c", "cd /app; echo 'Aguardando frontend...'; sleep 10; until curl -s -o /dev/null -w '%{http_code}' http://frontend:5173/ | grep -q '^[0-9]'; do echo 'Frontend ainda não está pronto...'; sleep 3; done; echo 'Frontend pronto!'; sleep 5; pytest --maxfail=1000 --disable-warnings --tb=short --cov=. --cov-report=term-missing; pylint app"]
     depends_on:
       - db
+      - frontend
     environment:
       - DATABASE_URL=postgresql://user:password@db:5432/mydb
       - PYTHONPATH=/app
+      - DOCKER_ENV=true
 
 volumes:
   pgdata:

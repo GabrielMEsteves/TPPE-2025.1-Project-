@@ -1,15 +1,56 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 const ConfirmacaoCompra: React.FC = () => {
   const navigate = useNavigate();
-  const [nome, setNome] = useState('José da Silva');
-  const [cpf, setCpf] = useState('123.456.789-00');
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState('');
+  const [success, setSuccess] = useState('');
 
-  const handlePagar = (e: React.FormEvent) => {
+  // Recupera dados do passageiro, assento e itinerário
+  const dadosPassageiro = localStorage.getItem('dadosPassageiro');
+  const assentoSelecionado = localStorage.getItem('assentoSelecionado');
+  const itinerarioSelecionado = localStorage.getItem('itinerarioSelecionado');
+  const [nome, setNome] = useState(() => dadosPassageiro ? JSON.parse(dadosPassageiro).nome : '');
+
+  let resumoViagem = '';
+  let preco = '';
+  if (itinerarioSelecionado) {
+    const itin = JSON.parse(itinerarioSelecionado);
+    resumoViagem = `${itin.origem} → ${itin.destino}`;
+    preco = itin.preco_viagem ? `R$ ${itin.preco_viagem.toFixed(2)}` : '';
+  }
+
+  const handlePagar = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Aqui você pode chamar a API para finalizar a compra
-    navigate('/minhas-passagens');
+    setLoading(true);
+    setErro('');
+    setSuccess('');
+    try {
+      if (!dadosPassageiro || !assentoSelecionado || !user) throw new Error('Dados incompletos');
+      const dados = JSON.parse(dadosPassageiro);
+      const payload = {
+        nome_passageiro: nome,
+        telefone: dados.telefone,
+        tipo: dados.tipo,
+        itinerario_id: dados.itinerario_id,
+        user_id: user.id,
+        numero_assento: assentoSelecionado,
+        // Adicione outros campos opcionais se necessário
+      };
+      await api.post('/api/v1/passagens/', payload);
+      setSuccess('Compra realizada com sucesso!');
+      localStorage.removeItem('dadosPassageiro');
+      localStorage.removeItem('assentoSelecionado');
+      setTimeout(() => navigate('/minhas-passagens'), 1500);
+    } catch (err) {
+      setErro('Erro ao finalizar compra.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -22,8 +63,7 @@ const ConfirmacaoCompra: React.FC = () => {
         {/* Resumo */}
         <div className="bg-slate-700/50 p-4 rounded-lg mb-6">
           <h3 className="font-bold text-lg text-white mb-2">Resumo da Viagem</h3>
-          <p className="text-slate-300">São Paulo <i className="ph ph-arrow-right align-middle"></i> Rio de Janeiro</p>
-          <p className="text-slate-400 text-sm">25/08/2025 - 22:00 | Viação Cometa | Poltrona Executivo</p>
+          <p className="text-slate-300">{resumoViagem}</p>
         </div>
         {/* Identificação */}
         <div className="mb-6">
@@ -33,10 +73,6 @@ const ConfirmacaoCompra: React.FC = () => {
               <label className="block text-sm font-medium text-slate-300 mb-1">Nome Completo</label>
               <input type="text" value={nome} onChange={e => setNome(e.target.value)} className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg p-3" />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1">Documento (CPF)</label>
-              <input type="text" value={cpf} onChange={e => setCpf(e.target.value)} className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg p-3" />
-            </div>
           </div>
         </div>
         {/* Pagamento */}
@@ -45,11 +81,13 @@ const ConfirmacaoCompra: React.FC = () => {
           <div className="bg-slate-700/50 p-4 rounded-lg">
             <p className="text-slate-300">Escolha o método:</p>
             <div className="flex items-center justify-between mt-4">
-              <p className="text-2xl font-bold text-white">Total: <span className="text-cyan-400">R$ 99,90</span></p>
-              <button type="submit" className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-6 rounded-lg transition duration-300">PAGAR COM PIX</button>
+              <p className="text-2xl font-bold text-white">Total: <span className="text-cyan-400">{preco}</span></p>
+              <button type="submit" disabled={loading} className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-6 rounded-lg transition duration-300">{loading ? 'Processando...' : 'PAGAR'}</button>
             </div>
           </div>
         </div>
+        {erro && <div className="text-red-400 text-sm mt-4">{erro}</div>}
+        {success && <div className="text-green-400 text-sm mt-4">{success}</div>}
       </form>
     </div>
   );

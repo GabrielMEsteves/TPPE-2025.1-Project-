@@ -1,5 +1,7 @@
-import requests
+"""Testes automatizados para endpoints de passagens administradas pelo admin."""
+
 import json
+import requests
 
 BASE_URL = "http://localhost:8000/api/v1"
 
@@ -12,7 +14,6 @@ def test_admin_endpoints():
         "username": "admin@example.com",
         "password": "admin123"
     }
-    
     try:
         login_response = requests.post(f"{BASE_URL}/admin/login", data=login_data)
         if login_response.status_code == 200:

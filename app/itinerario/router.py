@@ -57,3 +57,12 @@ def delete_itinerario(itin_id: int, db: Session = Depends(get_db)):
     if not ok:
         raise HTTPException(status_code=404, detail="Itinerário não encontrado")
     return None
+
+
+@router.get("/{itinerario_id}/assentos")
+def get_mapa_assentos(itinerario_id: int, db: Session = Depends(get_db)):
+    """
+    Retorna o mapa de assentos do itinerário, indicando quais estão ocupados.
+    """
+    from .repositoy import get_mapa_assentos
+    return get_mapa_assentos(db, itinerario_id)

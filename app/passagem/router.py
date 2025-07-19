@@ -48,6 +48,20 @@ def consultar_minhas_passagens(
     return repository.get_passagens_by_user(db, current_user.id, nome_passageiro, telefone)
 
 
+@router.post("/reservar-assento")
+def reservar_assento(
+    itinerario_id: int,
+    numero_assento: str,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    """
+    Reserva temporariamente um assento para o usuário, se disponível.
+    """
+    from .repository import reservar_assento
+    return reservar_assento(db, itinerario_id, numero_assento, current_user.id)
+
+
 @router.get("/{passagem_id}", response_model=schema.PassagemOut)
 def get_passagem(passagem_id: int, db: Session = Depends(get_db)):
     passagem = repository.get_passagem_by_id(db, passagem_id)

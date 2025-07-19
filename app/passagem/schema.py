@@ -30,6 +30,8 @@ class PassagemBase(BaseModel):
     tipo_poltrona_onibus: Optional[TipoPoltronaOnibusEnum] = None
     itinerario_id: Optional[int] = None
     user_id: Optional[int] = None
+    numero_assento: Optional[str] = None  # Novo campo
+    tipo_assento: Optional[str] = None    # Novo campo
 
     @model_validator(mode="after")
     def check_conditional_fields(cls, values):
@@ -55,6 +57,8 @@ class PassagemCreate(PassagemBase):
     user_id: int
     classe_aviao: Optional[ClassePassagemAviaoEnum] = None
     tipo_poltrona_onibus: Optional[TipoPoltronaOnibusEnum] = None
+    numero_assento: Optional[str] = None  # Novo campo
+    tipo_assento: Optional[str] = None    # Novo campo
 
 
 class PassagemUpdate(PassagemBase):
@@ -74,6 +78,8 @@ class PassagemOut(PassagemBase):
     tipo_transporte: Optional[str] = None
     tipo_assento: Optional[str] = None
     status: Optional[str] = None
+    numero_assento: Optional[str] = None  # Novo campo
+    tipo_assento: Optional[str] = None    # Novo campo
 
     class Config:
         from_attributes = True
