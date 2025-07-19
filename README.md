@@ -36,7 +36,7 @@ Foram definidos os seguintes diagramas UML para o projeto:
 
 - **Backend**: FastAPI, Python
 - **Banco de Dados**: PostgreSQL
-- **Frontend**: -
+- **Frontend**: React, Vite
 - **Infraestrutura**: Docker, Docker Compose
 - **Testes**: Pytest
 - **Documentação**: Swagger UI (FastAPI)
