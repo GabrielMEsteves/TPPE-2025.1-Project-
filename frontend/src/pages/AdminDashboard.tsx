@@ -204,6 +204,7 @@ const AdminDashboard: React.FC = () => {
   const [error, setError] = useState('');
   const [editingItinerario, setEditingItinerario] = useState<Itinerario | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(''); // Novo estado para busca
 
   useEffect(() => {
     const fetchItinerarios = async () => {
@@ -293,7 +294,13 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
         <div className="w-full flex justify-between items-center mb-4">
-          <input type="text" placeholder="Buscar por origem, destino..." className="bg-slate-700 border border-slate-600 rounded-lg p-2 w-1/3" />
+          <input 
+            type="text" 
+            placeholder="Buscar por origem, destino, empresa, data..." 
+            className="bg-slate-700 border border-slate-600 rounded-lg p-2 w-1/3"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+          />
           <div className="space-x-3">
             <button onClick={() => navigate('/admin/passengers')} className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
               <i className="ph ph-users align-middle mr-1"></i> Gerenciar Passagens
@@ -320,7 +327,15 @@ const AdminDashboard: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-700">
-              {itinerarios.map((itin) => (
+              {(itinerarios.filter((itin) => {
+                const term = searchTerm.toLowerCase();
+                return (
+                  itin.origem.toLowerCase().includes(term) ||
+                  itin.destino.toLowerCase().includes(term) ||
+                  (itin.empresa && itin.empresa.toLowerCase().includes(term)) ||
+                  (itin.data && itin.data.toLowerCase().includes(term))
+                );
+              })).map((itin) => (
                 <tr key={itin.id} className="hover:bg-slate-700">
                   <td className="p-3">{itin.origem} → {itin.destino}</td>
                   <td className="p-3">{itin.data} {itin.horario}</td>

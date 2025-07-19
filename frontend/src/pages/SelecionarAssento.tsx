@@ -11,6 +11,7 @@ const SelecionarAssento: React.FC = () => {
   const navigate = useNavigate();
   const [mapa, setMapa] = useState<Assento[][]>([]);
   const [itinerarioId, setItinerarioId] = useState<number | null>(null);
+  const [tipoTransporte, setTipoTransporte] = useState<'aviao' | 'onibus' | null>(null); // Novo estado
   const [selecionado, setSelecionado] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState('');
@@ -20,6 +21,7 @@ const SelecionarAssento: React.FC = () => {
     if (stored) {
       const itin = JSON.parse(stored);
       setItinerarioId(itin.id);
+      setTipoTransporte(itin.tipo_transporte || 'onibus'); // Padrão onibus
       carregarMapa(itin.id);
     }
   }, []);
@@ -61,6 +63,12 @@ const SelecionarAssento: React.FC = () => {
       setLoading(false);
     }
   };
+
+  // Cálculo dinâmico para altura do SVG
+  const numRows = mapa.length || 10;
+  const svgHeight = 60 + numRows * 32 + (tipoTransporte === 'aviao' ? 120 : 80); // Altura baseada nas linhas
+  const gridMarginTop = tipoTransporte === 'aviao' ? 80 : 60;
+  const gridMarginBottom = tipoTransporte === 'aviao' ? 120 : 80;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-900">

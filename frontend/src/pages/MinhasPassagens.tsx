@@ -28,6 +28,22 @@ const MinhasPassagens: React.FC = () => {
   const [error, setError] = useState('');
   const [selectedPassagem, setSelectedPassagem] = useState<Passagem | null>(null);
   const [canceling, setCanceling] = useState<number | null>(null);
+  const [abaAtiva, setAbaAtiva] = useState<'proximas' | 'anteriores'>('proximas'); // Nova aba
+
+  // Função para separar próximas e anteriores
+  const now = new Date();
+  const parseDataHora = (data: string, horario: string) => {
+    // data: '2025-07-16', horario: '08:00'
+    return new Date(`${data}T${horario}`);
+  };
+  const proximas = passagens.filter(p => {
+    const dataHora = parseDataHora(p.data, p.horario);
+    return dataHora >= now;
+  });
+  const anteriores = passagens.filter(p => {
+    const dataHora = parseDataHora(p.data, p.horario);
+    return dataHora < now;
+  });
 
   const fetchPassagens = async () => {
     setLoading(true);
@@ -89,42 +105,54 @@ const MinhasPassagens: React.FC = () => {
           <h2 className="text-2xl font-bold text-white">Minhas Passagens</h2>
         </div>
         <div className="flex space-x-2 mb-6 border-b border-slate-700">
-          <button className="text-cyan-400 border-b-2 border-cyan-400 px-4 py-2 font-semibold">Próximas Viagens</button>
-          <button className="text-slate-400 hover:text-white px-4 py-2 font-semibold">Viagens Anteriores</button>
+          <button 
+            className={`px-4 py-2 font-semibold ${abaAtiva === 'proximas' ? 'text-cyan-400 border-b-2 border-cyan-400' : 'text-slate-400 hover:text-white'}`}
+            onClick={() => setAbaAtiva('proximas')}
+          >Próximas Viagens</button>
+          <button 
+            className={`px-4 py-2 font-semibold ${abaAtiva === 'anteriores' ? 'text-cyan-400 border-b-2 border-cyan-400' : 'text-slate-400 hover:text-white'}`}
+            onClick={() => setAbaAtiva('anteriores')}
+          >Viagens Anteriores</button>
         </div>
         {loading && <div className="text-slate-300">Carregando...</div>}
         {error && <div className="text-red-400 text-sm mb-4">{error}</div>}
         {/* Card de Passagem */}
         <div className="space-y-4 w-full">
-          {passagens.map((p) => (
-            <div key={p.id} className="bg-slate-700/50 p-4 rounded-lg border border-slate-500 flex flex-col md:flex-row md:items-center md:justify-between mb-2">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <i className={`ph ${p.tipo_transporte === 'aviao' ? 'ph-airplane' : 'ph-bus'} text-xl text-cyan-400`}></i>
-                  <span className="font-bold text-lg text-white">{p.origem || '-'}</span>
-                  <i className="ph ph-arrow-right text-lg text-cyan-400 mx-2"></i>
-                  <span className="font-bold text-lg text-white">{p.destino || '-'}</span>
+          {(abaAtiva === 'proximas' ? proximas : anteriores).map((p) => {
+            // Se for aba de anteriores, status vira 'expirada'
+            const status = (abaAtiva === 'anteriores') ? 'expirada' : p.status;
+            return (
+              <div key={p.id} className="bg-slate-700/50 p-4 rounded-lg border border-slate-500 flex flex-col md:flex-row md:items-center md:justify-between mb-2">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <i className={`ph ${p.tipo_transporte === 'aviao' ? 'ph-airplane' : 'ph-bus'} text-xl text-cyan-400`}></i>
+                    <span className="font-bold text-lg text-white">{p.origem || '-'}</span>
+                    <i className="ph ph-arrow-right text-lg text-cyan-400 mx-2"></i>
+                    <span className="font-bold text-lg text-white">{p.destino || '-'}</span>
+                  </div>
+                  <div className="flex items-center gap-4 text-slate-300 text-sm mb-1">
+                    <span><i className="ph ph-calendar"></i> {p.data || '-'}</span>
+                    <span><i className="ph ph-clock"></i> {p.horario || '-'}</span>
+                    <span><i className="ph ph-buildings"></i> {p.empresa || '-'}</span>
+                    <span><i className="ph ph-ticket"></i> {formatarTipoAssento(p.tipo_assento)}</span>
+                    <span><i className="ph ph-timer"></i> {p.duracao_viagem || '-'}</span>
+                    <span><i className="ph ph-currency-circle-dollar"></i> {formatarPreco(p.preco_viagem)}</span>
+                  </div>
+                  <div className="flex items-center gap-4 mt-2">
+                    <span className={`text-xs font-bold px-2 py-1 rounded-full ${status === 'CONFIRMADA' ? 'bg-green-900/50 text-green-400' : status === 'expirada' ? 'bg-red-900/50 text-red-400' : 'bg-yellow-900/50 text-yellow-400'}`}>{status === 'expirada' ? 'EXPIRADA' : status}</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-4 text-slate-300 text-sm mb-1">
-                  <span><i className="ph ph-calendar"></i> {p.data || '-'}</span>
-                  <span><i className="ph ph-clock"></i> {p.horario || '-'}</span>
-                  <span><i className="ph ph-buildings"></i> {p.empresa || '-'}</span>
-                  <span><i className="ph ph-ticket"></i> {formatarTipoAssento(p.tipo_assento)}</span>
-                  <span><i className="ph ph-timer"></i> {p.duracao_viagem || '-'}</span>
-                  <span><i className="ph ph-currency-circle-dollar"></i> {formatarPreco(p.preco_viagem)}</span>
-                </div>
-                <div className="flex items-center gap-4 mt-2">
-                  <span className={`text-xs font-bold px-2 py-1 rounded-full ${p.status === 'CONFIRMADA' ? 'bg-green-900/50 text-green-400' : 'bg-yellow-900/50 text-yellow-400'}`}>{p.status}</span>
+                <div className="flex flex-col md:flex-row gap-2 mt-4 md:mt-0 md:ml-4">
+                  <button className="flex items-center gap-1 text-sm text-white bg-slate-800 border border-slate-500 rounded px-4 py-2 hover:bg-slate-700" onClick={() => setSelectedPassagem(p)}><i className="ph ph-ticket"></i> Ver Bilhete</button>
+                  {abaAtiva === 'proximas' && (
+                    <button className="text-sm text-white bg-red-500 rounded px-4 py-2 hover:bg-red-600" disabled={canceling === p.id} onClick={() => handleCancelar(p.id)}>{canceling === p.id ? 'Cancelando...' : 'Cancelar'}</button>
+                  )}
                 </div>
               </div>
-              <div className="flex flex-col md:flex-row gap-2 mt-4 md:mt-0 md:ml-4">
-                <button className="flex items-center gap-1 text-sm text-white bg-slate-800 border border-slate-500 rounded px-4 py-2 hover:bg-slate-700" onClick={() => setSelectedPassagem(p)}><i className="ph ph-ticket"></i> Ver Bilhete</button>
-                <button className="text-sm text-white bg-red-500 rounded px-4 py-2 hover:bg-red-600" disabled={canceling === p.id} onClick={() => handleCancelar(p.id)}>{canceling === p.id ? 'Cancelando...' : 'Cancelar'}</button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
-        {!loading && passagens.length === 0 && <div className="text-slate-400 text-center mt-8">Nenhuma passagem encontrada.</div>}
+        {!loading && (abaAtiva === 'proximas' ? proximas.length === 0 : anteriores.length === 0) && <div className="text-slate-400 text-center mt-8">Nenhuma passagem encontrada.</div>}
       </div>
       {/* Modal de detalhes da passagem */}
       {selectedPassagem && (
