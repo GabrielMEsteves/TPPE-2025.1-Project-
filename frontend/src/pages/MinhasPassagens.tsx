@@ -18,6 +18,7 @@ interface Passagem {
   preco_viagem?: number;
   tipo_transporte?: string;
   tipo_assento?: string;
+  numero_assento?: string; // Novo campo
 }
 
 const MinhasPassagens: React.FC = () => {
@@ -146,6 +147,7 @@ const MinhasPassagens: React.FC = () => {
               <div><b>Empresa:</b> {selectedPassagem.empresa}</div>
               <div><b>Tipo de Transporte:</b> {formatarTipoTransporte(selectedPassagem.tipo_transporte)}</div>
               <div><b>Tipo de Assento:</b> {formatarTipoAssento(selectedPassagem.tipo_assento)}</div>
+              <div><b>Número do Assento:</b> {selectedPassagem.numero_assento || '-'}</div>
               <div><b>Duração:</b> {selectedPassagem.duracao_viagem || '-'}</div>
               <div><b>Preço:</b> {formatarPreco(selectedPassagem.preco_viagem)}</div>
               <div><b>Status:</b> {selectedPassagem.status}</div>

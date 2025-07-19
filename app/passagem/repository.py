@@ -116,6 +116,7 @@ def get_passagens_by_user(
             "preco_viagem": itin.preco_viagem if itin else None,
             "tipo_transporte": itin.tipo_transporte if itin else None,
             "tipo_assento": itin.tipo_assento if itin else None,
+            "numero_assento": p.numero_assento,  # Adicionado para frontend
             "status": "CONFIRMADA"
         }
         result.append(item)
